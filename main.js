@@ -45,7 +45,6 @@ function saveAllPosts(posts) {
 
 // ==== Twitter Embedding ====
 function isTwitterUrl(str) {
-  // รองรับทั้ง twitter.com และ x.com
   return /(https?:\/\/(www\.)?(twitter|x)\.com\/[^\/]+\/status\/\d+)/.test(str);
 }
 function extractTweetUrl(str) {
@@ -69,7 +68,14 @@ async function renderFeed() {
 
     if (tweetUrl) {
       contentElem.innerHTML = `<blockquote class="twitter-tweet"><a href="${tweetUrl}"></a></blockquote>`;
-    } else {
+    }
+    // ถ้ามีข้อความปกติด้วย ให้แสดงก่อน embed
+    if (post.content.replace(tweetUrl||'','').trim()) {
+      const normalText = document.createElement('div');
+      normalText.textContent = post.content.replace(tweetUrl||'','').trim();
+      contentElem.appendChild(normalText);
+    }
+    if (!tweetUrl) {
       contentElem.textContent = post.content;
     }
 
