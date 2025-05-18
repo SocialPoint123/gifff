@@ -1,50 +1,130 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>SharkFeed - Hacker Twitter</title>
-  <!-- Open Graph -->
-  <meta property="og:title" content="SharkFeed - Hacker Twitter" />
-  <meta property="og:description" content="ของขวัญสำหรับรำ embed ทวีต" />
-  <meta property="og:image" content="https://socialpoint123.github.io/images/og-image.png" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://socialpoint123.github.io/" />
-  <link rel="stylesheet" href="style.css">
-</head>
-<body class="hacker-theme">
-  <header>
-    <img src="images/logo.png" alt="Shark Logo" class="logo"/>
-    <h1>SharkFeed</h1>
-  </header>
-  <main>
-    <form id="postForm" enctype="multipart/form-data">
-      <textarea id="postContent" rows="5" cols="40"
-  placeholder="What's happening? (ข้อความ, ลิงก์ทวีต, โค้ด embed หรือทั้งสอง)" maxlength="2400" required></textarea>
-      <input type="file" id="postImage" accept="image/*"/>
-      <button type="submit" id="postBtn">Post</button>
-    </form>
-    <section id="feed"></section>
-  </main>
-  <template id="postTemplate">
-    <article class="post">
-      <div class="post-header">
-        <img src="images/logo.png" class="avatar" alt="Shark"/>
-        <span class="username">SharkUser</span>
-        <span class="time"></span>
-        <!-- ปุ่มลบจะถูกเติมโดย JS -->
-      </div>
-      <div class="post-body">
-        <div class="content"></div>
-        <img class="post-img" style="display:none"/>
-      </div>
-      <div class="post-actions">
-        <button class="like" title="Like">💚</button>
-        <button class="comment" title="Comment">💬</button>
-        <button class="retweet" title="Retweet">🔁</button>
-      </div>
-    </article>
-  </template>
-  <script src="main.js"></script>
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let currentEmbedCode = '';
+        let postToDeleteId = '';
+
+        // Load posts from Realtime Database on page load
+        window.onload = function() {
+            database.ref('posts').orderByChild('timestamp').on('value', snapshot => {
+                const postsContainer = document.getElementById('posts');
+                postsContainer.innerHTML = '';
+                const posts = [];
+                snapshot.forEach(childSnapshot => {
+                    const post = childSnapshot.val();
+                    post.id = childSnapshot.key;
+                    posts.push(post);
+                });
+
+                // Sort posts by timestamp (newest first)
+                posts.sort((a, b) => b.timestamp - a.timestamp);
+
+                // Display posts
+                posts.forEach(post => {
+                    const postDiv = document.createElement('div');
+                    postDiv.className = 'post';
+                    postDiv.setAttribute('data-id', post.id);
+                    postDiv.innerHTML = `
+                        <div class="post-content">${post.embedCode}</div>
+                        <div class="post-actions">
+                            <button class="delete-btn" onclick="openDeletePasswordModal('${post.id}')">🗑️ Delete</button>
+                        </div>
+                    `;
+                    postsContainer.appendChild(postDiv);
+                });
+
+                // Load X embed script
+                if (window.twttr && window.twttr.widgets) {
+                    window.twttr.widgets.load();
+                }
+            });
+
+            // Load X widgets script
+            const script = document.createElement('script');
+            script.src = 'https://platform.twitter.com/widgets.js';
+            script.async = true;
+            document.body.appendChild(script);
+        };
+
+        // Open password modal for posting
+        function openPostPasswordModal() {
+            const postInput = document.querySelector('.post-input');
+            currentEmbedCode = postInput.value.trim();
+            if (currentEmbedCode) {
+                document.getElementById('postPasswordModal').style.display = 'flex';
+            } else {
+                alert('Please paste an embed code!');
+            }
+        }
+
+        // Verify password for posting
+        function verifyPostPassword() {
+            const password = document.getElementById('postPasswordInput').value;
+            if (password === 'adminpp') {
+                embedPost();
+                document.getElementById('postPasswordModal').style.display = 'none';
+                document.getElementById('postPasswordInput').value = '';
+                document.querySelector('.post-input').value = '';
+            } else {
+                alert('Incorrect password!');
+            }
+        }
+
+        // Save post to Realtime Database
+        function embedPost() {
+            const newPostRef = database.ref('posts').push();
+            newPostRef.set({
+                embedCode: currentEmbedCode,
+                timestamp: Date.now()
+            }).catch(error => {
+                console.error('Error adding post: ', error);
+                alert('Failed to post!');
+            });
+        }
+
+        // Open password modal for deleting
+        function openDeletePasswordModal(postId) {
+            postToDeleteId = postId;
+            document.getElementById('deletePasswordModal').style.display = 'flex';
+        }
+
+        // Verify password for deleting
+        function verifyDeletePassword() {
+            const password = document.getElementById('deletePasswordInput').value;
+            if (password === 'adminpp') {
+                deletePost();
+                document.getElementById('deletePasswordModal').style.display = 'none';
+                document.getElementById('deletePasswordInput').value = '';
+            } else {
+                alert('Incorrect password!');
+            }
+        }
+
+        // Delete post from Realtime Database
+        function deletePost() {
+            database.ref('posts/' + postToDeleteId).remove().catch(error => {
+                console.error('Error deleting post: ', error);
+                alert('Failed to delete post!');
+            });
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('postPasswordModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('postPasswordModal')) {
+                document.getElementById('postPasswordModal').style.display = 'none';
+            }
+        });
+
+        document.getElementById('deletePasswordModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('deletePasswordModal')) {
+                document.getElementById('deletePasswordModal').style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
