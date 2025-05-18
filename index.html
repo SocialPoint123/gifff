@@ -13,7 +13,7 @@
   </header>
   <main>
     <form id="postForm" enctype="multipart/form-data">
-      <textarea id="postContent" placeholder="What's happening?" maxlength="240" required></textarea>
+      <textarea id="postContent" placeholder="What's happening? (ข้อความ, ลิงก์ทวีต หรือทั้งสอง)" maxlength="240" required></textarea>
       <input type="file" id="postImage" accept="image/*"/>
       <button type="submit" id="postBtn">Post</button>
     </form>
@@ -25,15 +25,16 @@
         <img src="images/logo.png" class="avatar" alt="Shark"/>
         <span class="username">SharkUser</span>
         <span class="time"></span>
+        <!-- ปุ่มลบจะถูกเติมโดย JS -->
       </div>
       <div class="post-body">
         <p class="content"></p>
         <img class="post-img" style="display:none"/>
       </div>
       <div class="post-actions">
-        <button class="like">💚</button>
-        <button class="comment">💬</button>
-        <button class="retweet">🔁</button>
+        <button class="like" title="Like">💚</button>
+        <button class="comment" title="Comment">💬</button>
+        <button class="retweet" title="Retweet">🔁</button>
       </div>
     </article>
   </template>
