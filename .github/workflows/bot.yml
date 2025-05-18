@@ -1,0 +1,35 @@
+name: Run Bot with Firebase  
+on:  
+  push:  
+    branches:  
+      - main  
+  schedule:  
+    - cron: '0 * * * *' # รันทุกชั่วโมง  
+
+jobs:  
+  run-bot:  
+    runs-on: ubuntu-latest  
+    steps:  
+      - name: Checkout repository  
+        uses: actions/checkout@v3  
+
+      - name: Setup Node.js  
+        uses: actions/setup-node@v3  
+        with:  
+          node-version: '18'  
+
+      - name: Install dependencies  
+        run: npm install  
+
+      - name: Authenticate Firebase  
+        env:  
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}  
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}  
+          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}  
+        run: |  
+          echo "Setting up Firebase..."  
+          echo "$FIREBASE_API_KEY" > firebase.json  
+
+      - name: Run bot script  
+        run: node bot.js  
+        
