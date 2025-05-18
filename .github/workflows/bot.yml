@@ -22,14 +22,7 @@ jobs:
         run: npm install  
 
       - name: Authenticate Firebase  
-        env:  
-          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}  
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}  
-          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}  
-        run: |  
-          echo "Setting up Firebase..."  
-          echo "$FIREBASE_API_KEY" > firebase.json  
+        run: npx firebase-tools login:ci --token ${{ secrets.FIREBASE_PRIVATE_KEY }}  
 
       - name: Run bot script  
         run: node bot.js  
-        
