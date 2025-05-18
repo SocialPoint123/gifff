@@ -17,18 +17,6 @@ function timeAgo(date) {
 }
 
 // Posts Data
-const postsFile = 'data/posts.json';
-
-async function loadPosts() {
-  try {
-    const res = await fetch(postsFile);
-    if (!res.ok) return [];
-    return await res.json();
-  } catch {
-    return [];
-  }
-}
-
 async function savePost(post) {
   let posts = JSON.parse(localStorage.getItem('sharkPosts') || '[]');
   posts.unshift(post);
@@ -43,42 +31,20 @@ function saveAllPosts(posts) {
   localStorage.setItem('sharkPosts', JSON.stringify(posts));
 }
 
-// ==== Twitter Embedding ====
-function isTwitterUrl(str) {
-  return /(https?:\/\/(www\.)?(twitter|x)\.com\/[^\/]+\/status\/\d+)/.test(str);
-}
-function extractTweetUrl(str) {
-  const match = str.match(/https?:\/\/(www\.)?(twitter|x)\.com\/[^\/]+\/status\/\d+/);
-  return match ? match[0] : null;
-}
-
 // ==== Render Feed ====
 async function renderFeed() {
   let posts = getSavedPosts();
-  try {
-    const defaultPosts = await loadPosts();
-    posts = posts.concat(defaultPosts.filter(dp => !posts.find(p => p.time === dp.time && p.content === dp.content)));
-  } catch {}
   const feed = document.getElementById('feed');
   feed.innerHTML = "";
   posts.forEach((post, idx) => {
     const tpl = document.getElementById('postTemplate').content.cloneNode(true);
     const contentElem = tpl.querySelector('.content');
-    const tweetUrl = extractTweetUrl(post.content);
-
-    if (tweetUrl) {
-      contentElem.innerHTML = `<blockquote class="twitter-tweet"><a href="${tweetUrl}"></a></blockquote>`;
-    }
-    // ถ้ามีข้อความปกติด้วย ให้แสดงก่อน embed
-    if (post.content.replace(tweetUrl||'','').trim()) {
-      const normalText = document.createElement('div');
-      normalText.textContent = post.content.replace(tweetUrl||'','').trim();
-      contentElem.appendChild(normalText);
-    }
-    if (!tweetUrl) {
+    // เช็คว่ามี blockquote ทวิตเตอร์ในโพสต์ไหม
+    if (post.content.includes('<blockquote class="twitter-tweet"')) {
+      contentElem.innerHTML = post.content;
+    } else {
       contentElem.textContent = post.content;
     }
-
     tpl.querySelector('.time').textContent = timeAgo(new Date(post.time));
     if (post.img) {
       const img = tpl.querySelector('.post-img');
