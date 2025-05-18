@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@500&display=swap');
+
+:root {
+  --bg: #0e1111;
+  --primary: #39ff14;
+  --accent: #19aedb;
+  --secondary: #222;
+  --font: 'Fira Mono', monospace;
+  --comment: #ffe066;
+  --retweet: #ff2079;
+  --like: #39ff14;
+}
+body.hacker-theme {
+  background: var(--bg);
+  color: var(--primary);
+  font-family: var(--font);
+}
+body.comment-theme {
+  background: #232323;
+  color: var(--comment);
+}
+body.retweet-theme {
+  background: #191970;
+  color: var(--retweet);
+}
+header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: var(--secondary);
+  border-bottom: 2px solid var(--primary);
+}
+.logo {
+  width: 48px;
+  margin-right: 1rem;
+}
+h1 {
+  font-size: 2rem;
+  letter-spacing: 2px;
+  margin: 0;
+}
+form#postForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--secondary);
+  border-radius: 8px;
+  margin: 1rem auto;
+  max-width: 500px;
+  box-shadow: 0 0 12px #19aedb55;
+}
+#postContent {
+  background: #121212;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 0.75rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  resize: vertical;
+}
+#postBtn {
+  background: var(--primary);
+  color: #111;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1.5rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#postBtn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+#feed {
+  max-width: 550px;
+  margin: 2rem auto;
+}
+.post {
+  background: var(--secondary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 8px #39ff1455;
+  transition: box-shadow 0.3s;
+}
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.avatar {
+  width: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+}
+.username {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.time {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: #39ff1499;
+}
+.post-body {
+  margin-bottom: 0.7rem;
+}
+.post-img {
+  margin-top: 0.5rem;
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+  box-shadow: 0 0 10px #19aedb55;
+}
+.post-actions {
+  display: flex;
+  gap: 1.5rem;
+}
+.post-actions button {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.post-actions .like { color: var(--like);}
+.post-actions .comment {color: var(--comment);}
+.post-actions .retweet {color: var(--retweet);}
+.post-actions button:active {
+  transform: scale(1.15);
+}
+::-webkit-scrollbar {
+  width: 7px;
+  background: #191919;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 5px;
+}
