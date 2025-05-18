@@ -51,13 +51,12 @@ form#postForm {
   box-shadow: 0 0 12px #19aedb55;
 }
 #postContent {
-  background: #121212;
-  color: var(--primary);
-  border: 1px solid var(--primary);
-  padding: 0.75rem;
-  border-radius: 5px;
-  font-size: 1rem;
-  resize: vertical;
+  min-height: 80px;
+  width: 100%;
+  font-size: 1.1em;
+  resize: vertical; /* ให้ผู้ใช้ลากขยายได้ */
+  box-sizing: border-box;
+  padding: 8px;
 }
 #postBtn {
   background: var(--primary);
