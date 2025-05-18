@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 import sqlite3
 
-TOKEN = "8184639151:AAGtXvuLqX7FdBXEghEEdEqRhJDEwrEeqbU"
+TOKEN = "TELEGRAM_BOT_TOKEN"
 CHANNEL_ID = "@GiftForCasino"
 ADMIN_ID = 5805423698
 
