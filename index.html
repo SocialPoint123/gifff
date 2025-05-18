@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SharkEmbed</title>
+    <meta property="og:title" content="SharkEmbed">
+    <meta property="og:description" content="ของขวัญสำหรับคุณ">
+    <meta property="og:image" content="/images/og-image.png">
+    <meta property="og:url" content="https://SocialPoint123.github.io/gifff/">
+    <meta property="og:type" content="website">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        body {
+            background: #0d1117;
+            color: #00ff00;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            width: 80px;
+        }
+        .post-box {
+            background: #161b22;
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .post-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            font-size: 16px;
+            resize: vertical;
+            outline: none;
+            margin-bottom: 10px;
+            min-height: 80px;
+        }
+        .post-btn {
+            background: #00ff00;
+            color: #0d1117;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+        .posts {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .post {
+            background: #161b22;
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .post-content {
+            margin-bottom: 10px;
+        }
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: #ff0000;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #161b22;
+            border: 1px solid #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .modal-content input {
+            background: #0d1117;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px;
+            margin: 10px 0;
+            width: 100%;
+        }
+        .modal-content button {
+            background: #00ff00;
+            color: #0d1117;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/images/logo.png" alt="Shark Logo">
+            <h1>SharkEmbed</h1>
+        </div>
+        <div class="post-box">
+            <textarea class="post-input" placeholder="Paste embed code here (e.g., X post embed)"></textarea>
+            <button class="post-btn" onclick="openPostPasswordModal()">Embed Post</button>
+        </div>
+        <div class="posts" id="posts"></div>
+    </div>
+    <div class="modal" id="postPasswordModal">
+        <div class="modal-content">
+            <h2>Enter Password to Post</h2>
+            <input type="password" id="postPasswordInput" placeholder="Password">
+            <button onclick="verifyPostPassword()">Submit</button>
+        </div>
+    </div>
+    <div class="modal" id="deletePasswordModal">
+        <div class="modal-content">
+            <h2>Enter Password to Delete</h2>
+            <input type="password" id="deletePasswordInput" placeholder="Password">
+            <button onclick="verifyDeletePassword()">Submit</button>
+        </div>
+    </div>
+    <script>
+        let posts = [];
+        let currentEmbedCode = '';
+        let postToDeleteId = '';
+        window.onload = async function() {
+            try {
+                const response = await fetch('/data/posts.json');
+                posts = await response.json();
+            } catch (error) {
+                console.error('Error loading posts:', error);
+            }
+            displayPosts();
+            const script = document.createElement('script');
+            script.src = 'https://platform.x.com/widgets.js';
+            script.async = true;
+            document.body.appendChild(script);
+        };
+        function displayPosts() {
+            const postsContainer = document.getElementById('posts');
+            postsContainer.innerHTML = '';
+            posts.sort((a, b) => b.timestamp - a.timestamp);
+            posts.forEach((post, index) => {
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post';
+                postDiv.setAttribute('data-id', index);
+                postDiv.innerHTML = `
+                    <div class="post-content">${post.embedCode}</div>
+                    <div class="post-actions">
+                        <button class="delete-btn" onclick="openDeletePasswordModal(${index})">🗑️ Delete</button>
+                    </div>
+                `;
+                postsContainer.appendChild(postDiv);
+            });
+            if (window.twttr && window.twttr.widgets) {
+                window.twttr.widgets.load();
+            }
+        }
+        function openPostPasswordModal() {
+            const postInput = document.querySelector('.post-input');
+            currentEmbedCode = postInput.value.trim();
+            if (currentEmbedCode) {
+                document.getElementById('postPasswordModal').style.display = 'flex';
+            } else {
+                alert('Please paste an embed code!');
+            }
+        }
+        function verifyPostPassword() {
+            const password = document.getElementById('postPasswordInput').value;
+            if (password === 'adminpp') {
+                embedPost();
+                document.getElementById('postPasswordModal').style.display = 'none';
+                document.getElementById('postPasswordInput').value = '';
+                document.querySelector('.post-input').value = '';
+            } else {
+                alert('Incorrect password!');
+            }
+        }
+        function embedPost() {
+            posts.push({
+                embedCode: currentEmbedCode,
+                timestamp: Date.now()
+            });
+            displayPosts();
+            alert('Post added! Save changes by updating posts.json manually.');
+        }
+        function openDeletePasswordModal(index) {
+            postToDeleteId = index;
+            document.getElementById('deletePasswordModal').style.display = 'flex';
+        }
+        function verifyDeletePassword() {
+            const password = document.getElementById('deletePasswordInput').value;
+            if (password === 'adminpp') {
+                posts.splice(postToDeleteId, 1);
+                displayPosts();
+                document.getElementById('deletePasswordModal').style.display = 'none';
+                document.getElementById('deletePasswordInput').value = '';
+                alert('Post deleted! Save changes by updating posts.json manually.');
+            } else {
+                alert('Incorrect password!');
+            }
+        }
+        document.getElementById('postPasswordModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('postPasswordModal')) {
+                document.getElementById('postPasswordModal').style.display = 'none';
+            }
+        });
+        document.getElementById('deletePasswordModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('deletePasswordModal')) {
+                document.getElementById('deletePasswordModal').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
