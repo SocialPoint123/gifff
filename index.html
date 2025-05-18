@@ -1,15 +1,22 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>SharkFeed - Hacker Twitter</title>
-  <meta property="og:title" content="ของขวัญสำหรับรำ" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="SharkFeed - Hacker Twitter" />
   <meta property="og:description" content="ของขวัญสำหรับรำ embed ทวีต" />
   <meta property="og:image" content="https://socialpoint123.github.io/images/og-image.png" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://socialpoint123.github.io/" />
   <link rel="stylesheet" href="style.css">
 </head>
+<body class="hacker-theme">
+  <header>
+    <img src="images/logo.png" alt="Shark Logo" class="logo"/>
+    <h1>SharkFeed</h1>
+  </header>
   <main>
     <form id="postForm" enctype="multipart/form-data">
       <textarea id="postContent" placeholder="What's happening? (ข้อความ, ลิงก์ทวีต หรือทั้งสอง)" maxlength="240" required></textarea>
@@ -27,7 +34,7 @@
         <!-- ปุ่มลบจะถูกเติมโดย JS -->
       </div>
       <div class="post-body">
-        <p class="content"></p>
+        <div class="content"></div>
         <img class="post-img" style="display:none"/>
       </div>
       <div class="post-actions">
