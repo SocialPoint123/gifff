@@ -82,7 +82,7 @@ document.getElementById('postForm').addEventListener('submit', async e => {
   // Password Prompt
   const pw = prompt("Enter password to post:");
   if (pw !== "adminpp") {
-    alert("Incorrect password!");
+    alert("อย่ามั่วๆ!");
     return;
   }
 
